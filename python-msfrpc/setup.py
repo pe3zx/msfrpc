@@ -18,4 +18,4 @@ setup(name='msfrpc',
       url='http://www.trustwave.com',
       license='GPLv3',
       py_modules=['msfrpc'],
-     )
+      )

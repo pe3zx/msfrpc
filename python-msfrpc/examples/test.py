@@ -22,10 +22,10 @@ if __name__ == '__main__':
   mod = client.call('module.exploits')
   
   # Grab the first item from the modules value of the returned dict
-  print "Compatible payloads for : %s\n" % mod['modules'][0]
+  print("Compatible payloads for : %s\n" % mod['modules'][0])
   
   # Get the list of compatible payloads for the first option
   ret = client.call('module.compatible_payloads',[mod['modules'][0]])
   for i in (ret.get('payloads')):
-    print "\t%s" % i
+    print("\t%s" % i)
 
