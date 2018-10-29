@@ -59,9 +59,9 @@ class Msfrpc:
 
     def login(self, user, password):
         ret = self.call('auth.login', [user, password])
-        if ret.get('result') == 'success':
+        if ret.get(b'result') == b'success':
             self.authenticated = True
-            self.token = ret.get('token')
+            self.token = ret.get(b'token')
             return True
         else:
             raise self.MsfAuthError("MsfRPC: Authentication failed")
@@ -79,9 +79,9 @@ if __name__ == '__main__':
     mod = client.call('module.exploits')
 
     # Grab the first item from the modules value of the returned dict
-    print("Compatible payloads for : %s\n" % mod['modules'][0])
+    print("Compatible payloads for : %s\n" % mod[b'modules'][0])
 
     # Get the list of compatible payloads for the first option
-    ret = client.call('module.compatible_payloads', [mod['modules'][0]])
-    for i in (ret.get('payloads')):
+    ret = client.call('module.compatible_payloads', [mod[b'modules'][0]])
+    for i in (ret.get(b'payloads')):
         print("\t%s" % i)
