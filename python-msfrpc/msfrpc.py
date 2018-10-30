@@ -61,7 +61,6 @@ class Msfrpc:
             if len(opts) != 0:
                 payload += opts
 
-        print("PAYLOAD => {}".format(payload))
         params = self.encode(payload)
         self.client.request("POST", self.uri, params, self.headers)
         resp = self.client.getresponse()
