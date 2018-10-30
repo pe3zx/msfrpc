@@ -25,13 +25,14 @@ class Msfrpc:
             self.msg = msg
 
     def __init__(self, opts=[]):
-        self.host = opts.get('host') or "127.0.0.1"
+        self.host = opts.get('host') or '127.0.0.1'
         self.port = opts.get('port') or 55552
-        self.uri = opts.get('uri') or "/api/"
+        self.uri = opts.get('uri') or '/api/'
         self.ssl = opts.get('ssl') or False
-        self.authenticated = False
         self.token = False
+        self.Authenticated = False
         self.headers = {"Content-type": "binary/message-pack"}
+
         if self.ssl:
             self.client = http.client.HTTPSConnection(self.host, self.port)
         else:
@@ -43,16 +44,25 @@ class Msfrpc:
     def decode(self, data):
         return msgpack.unpackb(data)
 
-    def call(self, meth, opts=[]):
-        if meth != "auth.login":
-            if not self.authenticated:
-                raise self.MsfAuthError("MsfRPC: Not Authenticated")
+    def call(self, cmd, opts=[]):
+        cmd = [cmd]
 
-        if meth != "auth.login":
-            opts.insert(0, self.token)
+        if 'auth.login' in cmd:
+            payload = cmd+opts
 
-        opts.insert(0, meth)
-        params = self.encode(opts)
+        if 'auth.login' not in cmd:
+            if not self.Authenticated:
+                raise self.MsfAuthError('MsfRPC: Not Authenticated')
+
+        if 'auth.login' not in cmd:
+            cmd.append(self.token)
+            payload = cmd
+
+            if len(opts) != 0:
+                payload += opts
+
+        print("PAYLOAD => {}".format(payload))
+        params = self.encode(payload)
         self.client.request("POST", self.uri, params, self.headers)
         resp = self.client.getresponse()
         return self.decode(resp.read())
@@ -60,7 +70,7 @@ class Msfrpc:
     def login(self, user, password):
         ret = self.call('auth.login', [user, password])
         if ret.get(b'result') == b'success':
-            self.authenticated = True
+            self.Authenticated = True
             self.token = ret.get(b'token')
             return True
         else:
